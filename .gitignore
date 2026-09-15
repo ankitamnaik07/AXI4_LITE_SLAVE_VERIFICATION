@@ -1,0 +1,7 @@
+simv
+simv.vdb/
+simv.daidir/
+csrc/
+ucli.key
+vc_hdrs.h
+axi_waves.vcd
