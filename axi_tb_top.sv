@@ -1,3 +1,4 @@
+`timescale 1ns/1ns
 `include "axi_interface.sv"
 `include "axi_rtl.sv"
 `include "axi_test_pkg.sv"

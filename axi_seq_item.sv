@@ -24,6 +24,13 @@ bit [1:0]RRESP;
 bit RVALID;
 
 rand bit [1:0] wrsel;
+
+rand int aw_delay;
+rand int w_delay;
+rand int b_delay;
+rand int ar_delay;
+rand int r_delay;
+
 `uvm_object_utils_begin(axi_seq_item)
 `uvm_field_int(AWADDR, UVM_ALL_ON)
 `uvm_field_int(AWVALID, UVM_ALL_ON)
@@ -50,4 +57,24 @@ function new(string name = "axi_seq_item");
   super.new(name);
 endfunction
 
+constraint delays{ aw_delay inside{[1:20]};
+	w_delay inside{[1:20]};
+	b_delay inside{[1:20]};
+	ar_delay inside{[1:20]};
+	r_delay inside{[1:20]};
+}
+
+virtual function string convert2string();
+    string s;
+    
+    // Concatenate all signals grouped by their AXI channels
+    s = $sformatf("\n  [AW Channel] AWADDR: 'h%0h | AWPROT: 'h%0h | AWVALID: %0b | AWREADY: %0b", AWADDR, AWPROT, AWVALID, AWREADY);
+    s = {s, $sformatf("\n  [ W Channel] WDATA: 'h%0h | WSTRB: 'h%0h | WVALID: %0b | WREADY: %0b", WDATA, WSTRB, WVALID, WREADY)};
+    s = {s, $sformatf("\n  [ B Channel] BRESP: 'h%0h | BVALID: %0b | BREADY: %0b", BRESP, BVALID, BREADY)};
+    s = {s, $sformatf("\n  [AR Channel] ARADDR: 'h%0h | ARPROT: 'h%0h | ARVALID: %0b | ARREADY: %0b", ARADDR, ARPROT, ARVALID, ARREADY)};
+    s = {s, $sformatf("\n  [ R Channel] RDATA: 'h%0h | RRESP: 'h%0h | RVALID: %0b | RREADY: %0b", RDATA, RRESP, RVALID, RREADY)};
+    s = {s, $sformatf("\n  [   Delays ] aw:%0d w:%0d b:%0d ar:%0d r:%0d | wrsel: %0d", aw_delay, w_delay, b_delay, ar_delay, r_delay, wrsel)};
+    
+    return s;
+  endfunction
 endclass
