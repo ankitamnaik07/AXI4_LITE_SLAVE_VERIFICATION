@@ -137,6 +137,7 @@ class axi_input_monitor extends uvm_monitor;
         rdtr.ARVALID = vif.monin_cb.ARVALID;
         rdtr.ARREADY = vif.monin_cb.ARREADY;
         rdtr.ARADDR  = vif.monin_cb.ARADDR;
+        rdtr.ARPROT  = vif.monin_cb.ARPROT;
         inrd_port.write(rdtr);
         // Fixed: changed wrtr.sprint() to rdtr.convert2string()
         `uvm_info("INPUT_MONITOR", {"Input MONITOR[READ TRANSACTION]", rdtr.convert2string()}, UVM_NONE)

@@ -1,6 +1,3 @@
-// =============================================================================
-// Base / Raw Sequence
-// =============================================================================
 class axi_sequence extends uvm_sequence#(axi_seq_item);
   `uvm_object_utils(axi_sequence)
 
@@ -9,7 +6,7 @@ class axi_sequence extends uvm_sequence#(axi_seq_item);
   endfunction
 
   task body();
-    repeat(`num_of_transaction) begin
+    repeat (`num_of_transaction) begin
       req = axi_seq_item::type_id::create("req");
       start_item(req);
       assert(req.randomize() with { BREADY == 1; RREADY == 1; });
@@ -19,18 +16,15 @@ class axi_sequence extends uvm_sequence#(axi_seq_item);
 endclass
 
 
-// =============================================================================
-// Basic Sequences
-// =============================================================================
-class base_write extends uvm_sequence#(axi_seq_item);
-  `uvm_object_utils(base_write)
+class axi_base_write_seq extends uvm_sequence#(axi_seq_item);
+  `uvm_object_utils(axi_base_write_seq)
 
-  function new(string name = "base_write");
+  function new(string name = "axi_base_write_seq");
     super.new(name);
   endfunction
 
   task body();
-    repeat(`num_of_transaction) begin
+    repeat (`num_of_transaction) begin
       req = axi_seq_item::type_id::create("req");
       start_item(req);
       assert(req.randomize() with {
@@ -48,15 +42,16 @@ class base_write extends uvm_sequence#(axi_seq_item);
   endtask
 endclass
 
-class base_read extends uvm_sequence#(axi_seq_item);
-  `uvm_object_utils(base_read)
 
-  function new(string name = "base_read");
+class axi_base_read_seq extends uvm_sequence#(axi_seq_item);
+  `uvm_object_utils(axi_base_read_seq)
+
+  function new(string name = "axi_base_read_seq");
     super.new(name);
   endfunction
 
   task body();
-    repeat(`num_of_transaction) begin
+    repeat (`num_of_transaction) begin
       req = axi_seq_item::type_id::create("req");
       start_item(req);
       assert(req.randomize() with {
@@ -71,15 +66,16 @@ class base_read extends uvm_sequence#(axi_seq_item);
   endtask
 endclass
 
-class write_test extends uvm_sequence#(axi_seq_item);
-  `uvm_object_utils(write_test)
 
-  function new(string name = "write_test");
+class axi_write_addr_range_seq extends uvm_sequence#(axi_seq_item);
+  `uvm_object_utils(axi_write_addr_range_seq)
+
+  function new(string name = "axi_write_addr_range_seq");
     super.new(name);
   endfunction
 
-task body();
-    repeat(`num_of_transaction) begin
+  task body();
+    repeat (`num_of_transaction) begin
       req = axi_seq_item::type_id::create("req");
       start_item(req);
       assert(req.randomize() with {
@@ -97,15 +93,16 @@ task body();
   endtask
 endclass
 
-class read_test extends uvm_sequence#(axi_seq_item);
-  `uvm_object_utils(read_test)
 
-  function new(string name = "read_test");
+class axi_read_addr_range_seq extends uvm_sequence#(axi_seq_item);
+  `uvm_object_utils(axi_read_addr_range_seq)
+
+  function new(string name = "axi_read_addr_range_seq");
     super.new(name);
   endfunction
 
   task body();
-    repeat(`num_of_transaction) begin
+    repeat (`num_of_transaction) begin
       req = axi_seq_item::type_id::create("req");
       start_item(req);
       assert(req.randomize() with {
@@ -121,10 +118,11 @@ class read_test extends uvm_sequence#(axi_seq_item);
   endtask
 endclass
 
-class read_valid_test extends uvm_sequence#(axi_seq_item);
-  `uvm_object_utils(read_valid_test)
 
-  function new(string name = "read_valid_test");
+class axi_read_valid_addr_seq extends uvm_sequence#(axi_seq_item);
+  `uvm_object_utils(axi_read_valid_addr_seq)
+
+  function new(string name = "axi_read_valid_addr_seq");
     super.new(name);
   endfunction
 
@@ -147,10 +145,11 @@ class read_valid_test extends uvm_sequence#(axi_seq_item);
   endtask
 endclass
 
-class write_valid_test extends uvm_sequence#(axi_seq_item);
-  `uvm_object_utils(write_valid_test)
 
-  function new(string name = "write_valid_test");
+class axi_write_valid_addr_seq extends uvm_sequence#(axi_seq_item);
+  `uvm_object_utils(axi_write_valid_addr_seq)
+
+  function new(string name = "axi_write_valid_addr_seq");
     super.new(name);
   endfunction
 
@@ -176,13 +175,10 @@ class write_valid_test extends uvm_sequence#(axi_seq_item);
 endclass
 
 
-// =============================================================================
-// Status RO & Command WO Sequences
-// =============================================================================
-class axi_write_ro_sequence extends axi_sequence;
-  `uvm_object_utils(axi_write_ro_sequence)
+class axi_ro_write_reject_seq extends axi_sequence;
+  `uvm_object_utils(axi_ro_write_reject_seq)
 
-  function new(string name = "axi_write_ro_sequence");
+  function new(string name = "axi_ro_write_reject_seq");
     super.new(name);
   endfunction
 
@@ -191,7 +187,7 @@ class axi_write_ro_sequence extends axi_sequence;
   endtask
 
   task write_ro_seq_new();
-    repeat(`num_of_transaction) begin
+    repeat (`num_of_transaction) begin
       req = axi_seq_item::type_id::create("req");
       start_item(req);
       assert(req.randomize() with {
@@ -210,10 +206,11 @@ class axi_write_ro_sequence extends axi_sequence;
   endtask
 endclass
 
-class axi_read_wo_sequence extends axi_sequence;
-  `uvm_object_utils(axi_read_wo_sequence)
 
-  function new(string name = "axi_read_wo_sequence");
+class axi_wo_read_reject_seq extends axi_sequence;
+  `uvm_object_utils(axi_wo_read_reject_seq)
+
+  function new(string name = "axi_wo_read_reject_seq");
     super.new(name);
   endfunction
 
@@ -222,7 +219,7 @@ class axi_read_wo_sequence extends axi_sequence;
   endtask
 
   task read_wo_seq_new();
-    repeat(`num_of_transaction) begin
+    repeat (`num_of_transaction) begin
       req = axi_seq_item::type_id::create("req");
       start_item(req);
       assert(req.randomize() with {
@@ -240,13 +237,10 @@ class axi_read_wo_sequence extends axi_sequence;
 endclass
 
 
-// =============================================================================
-// Unaligned Access Sequences (Hits unaligned bins -> SLVERR)
-// =============================================================================
-class unaligned_write_seq extends axi_sequence;
-  `uvm_object_utils(unaligned_write_seq)
+class axi_unaligned_write_seq extends axi_sequence;
+  `uvm_object_utils(axi_unaligned_write_seq)
 
-  function new(string name = "unaligned_write_seq");
+  function new(string name = "axi_unaligned_write_seq");
     super.new(name);
   endfunction
 
@@ -269,6 +263,7 @@ class unaligned_write_seq extends axi_sequence;
     end
   endtask
 endclass
+
 
 class axi_unaligned_read_seq extends axi_sequence;
   `uvm_object_utils(axi_unaligned_read_seq)
@@ -297,9 +292,6 @@ class axi_unaligned_read_seq extends axi_sequence;
 endclass
 
 
-// =============================================================================
-// Out-of-Range Sequences (Hits first_outrange & far_outrange -> DECERR)
-// =============================================================================
 class axi_decerr_write_seq extends axi_sequence;
   `uvm_object_utils(axi_decerr_write_seq)
 
@@ -326,6 +318,7 @@ class axi_decerr_write_seq extends axi_sequence;
     end
   endtask
 endclass
+
 
 class axi_decerr_read_seq extends axi_sequence;
   `uvm_object_utils(axi_decerr_read_seq)
@@ -354,13 +347,10 @@ class axi_decerr_read_seq extends axi_sequence;
 endclass
 
 
-// =============================================================================
-// Byte Enable Patterns (Hits all_bytes, no_bytes, single_byte, partial)
-// =============================================================================
-class axi_all_wstrb_seq extends axi_sequence;
-  `uvm_object_utils(axi_all_wstrb_seq)
+class axi_wstrb_sweep_seq extends axi_sequence;
+  `uvm_object_utils(axi_wstrb_sweep_seq)
 
-  function new(string name = "axi_all_wstrb_seq");
+  function new(string name = "axi_wstrb_sweep_seq");
     super.new(name);
   endfunction
 
@@ -384,10 +374,11 @@ class axi_all_wstrb_seq extends axi_sequence;
   endtask
 endclass
 
-class axi_wstrb_test_seq extends axi_sequence;
-  `uvm_object_utils(axi_wstrb_test_seq)
 
-  function new(string name = "axi_wstrb_test_seq");
+class axi_wstrb_pattern_seq extends axi_sequence;
+  `uvm_object_utils(axi_wstrb_pattern_seq)
+
+  function new(string name = "axi_wstrb_pattern_seq");
     super.new(name);
   endfunction
 
@@ -414,9 +405,6 @@ class axi_wstrb_test_seq extends axi_sequence;
 endclass
 
 
-// =============================================================================
-// Decoupled FSM Handshake Sequences
-// =============================================================================
 class axi_addr_before_data_seq extends axi_sequence;
   `uvm_object_utils(axi_addr_before_data_seq)
 
@@ -425,7 +413,7 @@ class axi_addr_before_data_seq extends axi_sequence;
   endfunction
 
   task body();
-    repeat(`num_of_transaction) begin
+    repeat (`num_of_transaction) begin
       req = axi_seq_item::type_id::create("req");
       start_item(req);
       assert(req.randomize() with {
@@ -455,6 +443,7 @@ class axi_addr_before_data_seq extends axi_sequence;
   endtask
 endclass
 
+
 class axi_data_before_addr_seq extends axi_sequence;
   `uvm_object_utils(axi_data_before_addr_seq)
 
@@ -463,7 +452,7 @@ class axi_data_before_addr_seq extends axi_sequence;
   endfunction
 
   task body();
-    repeat(`num_of_transaction) begin
+    repeat (`num_of_transaction) begin
       req = axi_seq_item::type_id::create("req");
       start_item(req);
       assert(req.randomize() with {
@@ -494,9 +483,6 @@ class axi_data_before_addr_seq extends axi_sequence;
 endclass
 
 
-// =============================================================================
-// Full Sweep & Delays
-// =============================================================================
 class axi_full_memory_sweep_seq extends axi_sequence;
   `uvm_object_utils(axi_full_memory_sweep_seq)
 
@@ -507,7 +493,7 @@ class axi_full_memory_sweep_seq extends axi_sequence;
   task body();
     bit [31:0] rw_addrs[] = '{32'h00, 32'h04, 32'h08, 32'h0C,
                               32'h10, 32'h14, 32'h18, 32'h1C,
-                              32'h20, 32'h24, 32'h3C}; // Hits last_inrange (32'h3C)
+                              32'h20, 32'h24, 32'h3C};
     bit [31:0] wo_addrs[] = '{32'h34, 32'h38};
     bit [31:0] ro_addrs[] = '{32'h28, 32'h2C, 32'h30};
 
@@ -540,15 +526,16 @@ class axi_full_memory_sweep_seq extends axi_sequence;
   endtask
 endclass
 
-class axi_ready_delay_seq extends axi_sequence;
-  `uvm_object_utils(axi_ready_delay_seq)
 
-  function new(string name = "axi_ready_delay_seq");
+class axi_fixed_addr_write_seq extends axi_sequence;
+  `uvm_object_utils(axi_fixed_addr_write_seq)
+
+  function new(string name = "axi_fixed_addr_write_seq");
     super.new(name);
   endfunction
 
   task body();
-    repeat(`num_of_transaction) begin
+    repeat (`num_of_transaction) begin
       req = axi_seq_item::type_id::create("req");
       start_item(req);
       assert(req.randomize() with {
@@ -566,15 +553,16 @@ class axi_ready_delay_seq extends axi_sequence;
   endtask
 endclass
 
-class axi_concurrent_rw_seq extends axi_sequence;
-  `uvm_object_utils(axi_concurrent_rw_seq)
 
-  function new(string name = "axi_concurrent_rw_seq");
+class axi_write_addr_sweep_seq extends axi_sequence;
+  `uvm_object_utils(axi_write_addr_sweep_seq)
+
+  function new(string name = "axi_write_addr_sweep_seq");
     super.new(name);
   endfunction
 
   task body();
-    repeat(`num_of_transaction) begin
+    repeat (`num_of_transaction) begin
       req = axi_seq_item::type_id::create("req");
       start_item(req);
       assert(req.randomize() with {
@@ -588,6 +576,125 @@ class axi_concurrent_rw_seq extends axi_sequence;
         RREADY  == 0;
       });
       finish_item(req);
+    end
+  endtask
+endclass
+
+
+class axi_toggle_coverage_seq extends axi_sequence;
+  `uvm_object_utils(axi_toggle_coverage_seq)
+
+  function new(string name = "axi_toggle_coverage_seq");
+    super.new(name);
+  endfunction
+
+  bit [31:0] wide_addrs[] = '{32'hFFFF_FF40, 32'hAAAA_AA40, 32'h5555_5540, 32'h0000_0004};
+  bit [31:0] toggle_data[] = '{32'hFFFF_FFFF, 32'h0000_0000, 32'hAAAA_AAAA, 32'h5555_5555};
+
+  task body();
+    foreach (wide_addrs[i]) begin
+      `uvm_do_with(req, {
+        AWVALID == 1; AWADDR == wide_addrs[i]; AWPROT == 3'b111;
+        WVALID  == 1; WDATA  == toggle_data[i]; WSTRB == 4'b1111;
+        BREADY  == 1; ARVALID == 0; RREADY == 0;
+      })
+    end
+
+    foreach (toggle_data[i]) begin
+      `uvm_do_with(req, {
+        AWVALID == 1; AWADDR == 32'h04; WVALID == 1;
+        WDATA   == toggle_data[i]; WSTRB == 4'b1111; BREADY == 1;
+        ARVALID == 0; RREADY == 0;
+      })
+      `uvm_do_with(req, {
+        AWVALID == 0; WVALID == 0; BREADY == 0;
+        ARVALID == 1; ARADDR == 32'h04; RREADY == 1;
+      })
+    end
+
+    foreach (wide_addrs[i]) begin
+      `uvm_do_with(req, {
+        AWVALID == 0; WVALID == 0; BREADY == 0;
+        ARVALID == 1; ARADDR == wide_addrs[i]; ARPROT == 3'b111; RREADY == 1;
+      })
+    end
+    `uvm_do_with(req, {
+      AWVALID == 0; WVALID == 0; BREADY == 0;
+      ARVALID == 1; ARADDR == 32'h04; ARPROT == 3'b000; RREADY == 1;
+    })
+  endtask
+endclass
+
+
+class axi_master_100pct_coverage_seq extends axi_sequence;
+  `uvm_object_utils(axi_master_100pct_coverage_seq)
+
+  function new(string name = "axi_master_100pct_coverage_seq");
+    super.new(name);
+  endfunction
+
+  localparam bit [31:0] LAST_VALID  = (`MEM_DEPTH * 4) - 4;
+  localparam bit [31:0] FIRST_INVAL = (`MEM_DEPTH * 4);
+
+  bit [31:0] all_addrs[] = '{
+    32'h00, 32'h04, 32'h08, 32'h0C,
+    32'h10, 32'h14, 32'h20, 32'h24,
+    32'h28, 32'h2C, 32'h30,
+    32'h34, 32'h38,
+    LAST_VALID,
+    FIRST_INVAL,
+    32'h0000_0044, 32'h0000_0080, 32'h0000_0100,
+    32'h01, 32'h02, 32'h03, 32'h05, 32'h06, 32'h07
+  };
+
+  bit [3:0] all_strobes[] = '{
+    4'b1111,
+    4'b0000,
+    4'b0001, 4'b0010, 4'b0100, 4'b1000,
+    4'b0011, 4'b1100, 4'b0110
+  };
+
+  bit [31:0] all_data[] = '{
+    32'h0000_0000,
+    32'hFFFF_FFFF,
+    32'hCAFE_BABE
+  };
+
+  task body();
+    foreach (all_addrs[a]) begin
+      foreach (all_strobes[s]) begin
+        req = axi_seq_item::type_id::create("req");
+        start_item(req);
+        assert(req.randomize() with {
+          AWVALID == 1;
+          AWADDR  == all_addrs[a];
+          AWPROT  == (a + s) % 8;
+          WVALID  == 1;
+          WSTRB   == all_strobes[s];
+          WDATA   == all_data[(a + s) % 3];
+          BREADY  == 1;
+          ARVALID == 0;
+          RREADY  == 0;
+        });
+        finish_item(req);
+      end
+    end
+
+    foreach (all_addrs[a]) begin
+      for (int p = 0; p < 8; p++) begin
+        req = axi_seq_item::type_id::create("req");
+        start_item(req);
+        assert(req.randomize() with {
+          AWVALID == 0;
+          WVALID  == 0;
+          BREADY  == 0;
+          ARVALID == 1;
+          ARADDR  == all_addrs[a];
+          ARPROT  == p;
+          RREADY  == 1;
+        });
+        finish_item(req);
+      end
     end
   endtask
 endclass

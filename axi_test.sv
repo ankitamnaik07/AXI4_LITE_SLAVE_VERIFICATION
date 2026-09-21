@@ -50,66 +50,100 @@ class test_axi_sequence extends test;
   endtask
 endclass
 
-class base_test extends test;
-  `uvm_component_utils(base_test)
-  base_read br;
-  base_write bw;
+class test_axi_base_write_seq extends test;
+  `uvm_component_utils(test_axi_base_write_seq)
+  axi_base_write_seq seq;
 
-  function new(string name = "base_test", uvm_component parent);
+  function new(string name = "test_axi_base_write_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
   task run_phase(uvm_phase phase);
     phase.raise_objection(this);
-    bw = base_write::type_id::create("s");
-    bw.start(env.inp_agnt.wrsqr);
-    br = base_read::type_id::create("r");
-    br.start(env.inp_agnt.rdsqr);
+    seq = axi_base_write_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.wrsqr);
     #40;
     phase.drop_objection(this);
   endtask
 endclass
 
-class only_base_write_test extends test;
-  `uvm_component_utils(only_base_write_test)
-  base_write bw;
+class test_axi_base_read_seq extends test;
+  `uvm_component_utils(test_axi_base_read_seq)
+  axi_base_read_seq seq;
 
-  function new(string name = "only_base_write_test", uvm_component parent);
+  function new(string name = "test_axi_base_read_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
   task run_phase(uvm_phase phase);
     phase.raise_objection(this);
-    bw = base_write::type_id::create("bw");
-    bw.start(env.inp_agnt.wrsqr);
+    seq = axi_base_read_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.rdsqr);
     #40;
     phase.drop_objection(this);
   endtask
 endclass
 
-class only_base_read_test extends test;
-  `uvm_component_utils(only_base_read_test)
-  base_read br;
+class test_axi_base_rw_seq extends test;
+  `uvm_component_utils(test_axi_base_rw_seq)
+  axi_base_write_seq wr_seq;
+  axi_base_read_seq  rd_seq;
 
-  function new(string name = "only_base_read_test", uvm_component parent);
+  function new(string name = "test_axi_base_rw_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
   task run_phase(uvm_phase phase);
     phase.raise_objection(this);
-    br = base_read::type_id::create("br");
-    br.start(env.inp_agnt.rdsqr);
+    wr_seq = axi_base_write_seq::type_id::create("wr_seq");
+    wr_seq.start(env.inp_agnt.wrsqr);
+    rd_seq = axi_base_read_seq::type_id::create("rd_seq");
+    rd_seq.start(env.inp_agnt.rdsqr);
     #40;
     phase.drop_objection(this);
   endtask
 endclass
 
-class rewr_test extends test;
-  `uvm_component_utils(rewr_test)
-  read_test br;
-  write_test bw;
+class test_axi_write_addr_range_seq extends test;
+  `uvm_component_utils(test_axi_write_addr_range_seq)
+  axi_write_addr_range_seq seq;
 
-  function new(string name = "rewr_test", uvm_component parent);
+  function new(string name = "test_axi_write_addr_range_seq", uvm_component parent);
+    super.new(name, parent);
+  endfunction
+
+  task run_phase(uvm_phase phase);
+    phase.raise_objection(this);
+    seq = axi_write_addr_range_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.wrsqr);
+    #40;
+    phase.drop_objection(this);
+  endtask
+endclass
+
+class test_axi_read_addr_range_seq extends test;
+  `uvm_component_utils(test_axi_read_addr_range_seq)
+  axi_read_addr_range_seq seq;
+
+  function new(string name = "test_axi_read_addr_range_seq", uvm_component parent);
+    super.new(name, parent);
+  endfunction
+
+  task run_phase(uvm_phase phase);
+    phase.raise_objection(this);
+    seq = axi_read_addr_range_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.rdsqr);
+    #40;
+    phase.drop_objection(this);
+  endtask
+endclass
+
+class test_axi_addr_range_rw_seq extends test;
+  `uvm_component_utils(test_axi_addr_range_rw_seq)
+  axi_write_addr_range_seq wr_seq;
+  axi_read_addr_range_seq  rd_seq;
+
+  function new(string name = "test_axi_addr_range_rw_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
@@ -117,12 +151,12 @@ class rewr_test extends test;
     phase.raise_objection(this);
     fork
       begin
-        bw = write_test::type_id::create("s");
-        bw.start(env.inp_agnt.wrsqr);
+        wr_seq = axi_write_addr_range_seq::type_id::create("wr_seq");
+        wr_seq.start(env.inp_agnt.wrsqr);
       end
       begin
-        br = read_test::type_id::create("r");
-        br.start(env.inp_agnt.rdsqr);
+        rd_seq = axi_read_addr_range_seq::type_id::create("rd_seq");
+        rd_seq.start(env.inp_agnt.rdsqr);
       end
     join
     #40;
@@ -130,12 +164,46 @@ class rewr_test extends test;
   endtask
 endclass
 
-class rewr_valid_test extends test;
-  `uvm_component_utils(rewr_valid_test)
-  read_valid_test br;
-  write_valid_test bw;
+class test_axi_write_valid_addr_seq extends test;
+  `uvm_component_utils(test_axi_write_valid_addr_seq)
+  axi_write_valid_addr_seq seq;
 
-  function new(string name = "rewr_valid_test", uvm_component parent);
+  function new(string name = "test_axi_write_valid_addr_seq", uvm_component parent);
+    super.new(name, parent);
+  endfunction
+
+  task run_phase(uvm_phase phase);
+    phase.raise_objection(this);
+    seq = axi_write_valid_addr_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.wrsqr);
+    #40;
+    phase.drop_objection(this);
+  endtask
+endclass
+
+class test_axi_read_valid_addr_seq extends test;
+  `uvm_component_utils(test_axi_read_valid_addr_seq)
+  axi_read_valid_addr_seq seq;
+
+  function new(string name = "test_axi_read_valid_addr_seq", uvm_component parent);
+    super.new(name, parent);
+  endfunction
+
+  task run_phase(uvm_phase phase);
+    phase.raise_objection(this);
+    seq = axi_read_valid_addr_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.rdsqr);
+    #40;
+    phase.drop_objection(this);
+  endtask
+endclass
+
+class test_axi_valid_addr_rw_seq extends test;
+  `uvm_component_utils(test_axi_valid_addr_rw_seq)
+  axi_write_valid_addr_seq wr_seq;
+  axi_read_valid_addr_seq  rd_seq;
+
+  function new(string name = "test_axi_valid_addr_rw_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
@@ -143,48 +211,14 @@ class rewr_valid_test extends test;
     phase.raise_objection(this);
     fork
       begin
-        bw = write_valid_test::type_id::create("s");
-        bw.start(env.inp_agnt.wrsqr);
+        wr_seq = axi_write_valid_addr_seq::type_id::create("wr_seq");
+        wr_seq.start(env.inp_agnt.wrsqr);
       end
       begin
-        br = read_valid_test::type_id::create("r");
-        br.start(env.inp_agnt.rdsqr);
+        rd_seq = axi_read_valid_addr_seq::type_id::create("rd_seq");
+        rd_seq.start(env.inp_agnt.rdsqr);
       end
     join
-    #40;
-    phase.drop_objection(this);
-  endtask
-endclass
-
-class test_write_valid_test extends test;
-  `uvm_component_utils(test_write_valid_test)
-  write_valid_test bw;
-
-  function new(string name = "test_write_valid_test", uvm_component parent);
-    super.new(name, parent);
-  endfunction
-
-  task run_phase(uvm_phase phase);
-    phase.raise_objection(this);
-    bw = write_valid_test::type_id::create("bw");
-    bw.start(env.inp_agnt.wrsqr);
-    #40;
-    phase.drop_objection(this);
-  endtask
-endclass
-
-class test_read_valid_test extends test;
-  `uvm_component_utils(test_read_valid_test)
-  read_valid_test br;
-
-  function new(string name = "test_read_valid_test", uvm_component parent);
-    super.new(name, parent);
-  endfunction
-
-  task run_phase(uvm_phase phase);
-    phase.raise_objection(this);
-    br = read_valid_test::type_id::create("br");
-    br.start(env.inp_agnt.rdsqr);
     #40;
     phase.drop_objection(this);
   endtask
@@ -194,35 +228,35 @@ endclass
 // ==========================================
 // 2. Permission Error Tests (SLVERR)
 // ==========================================
-class test_axi_write_ro extends test;
-  `uvm_component_utils(test_axi_write_ro)
-  axi_write_ro_sequence bw;
+class test_axi_ro_write_reject_seq extends test;
+  `uvm_component_utils(test_axi_ro_write_reject_seq)
+  axi_ro_write_reject_seq seq;
 
-  function new(string name = "test_axi_write_ro", uvm_component parent);
+  function new(string name = "test_axi_ro_write_reject_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
   task run_phase(uvm_phase phase);
     phase.raise_objection(this);
-    bw = axi_write_ro_sequence::type_id::create("bw");
-    bw.start(env.inp_agnt.wrsqr);
+    seq = axi_ro_write_reject_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.wrsqr);
     #40;
     phase.drop_objection(this);
   endtask
 endclass
 
-class test_axi_read_wo extends test;
-  `uvm_component_utils(test_axi_read_wo)
-  axi_read_wo_sequence br;
+class test_axi_wo_read_reject_seq extends test;
+  `uvm_component_utils(test_axi_wo_read_reject_seq)
+  axi_wo_read_reject_seq seq;
 
-  function new(string name = "test_axi_read_wo", uvm_component parent);
+  function new(string name = "test_axi_wo_read_reject_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
   task run_phase(uvm_phase phase);
     phase.raise_objection(this);
-    br = axi_read_wo_sequence::type_id::create("br");
-    br.start(env.inp_agnt.rdsqr);
+    seq = axi_wo_read_reject_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.rdsqr);
     #40;
     phase.drop_objection(this);
   endtask
@@ -232,35 +266,35 @@ endclass
 // ==========================================
 // 3. Unaligned Access Tests (SLVERR)
 // ==========================================
-class test_axi_unaligned_write extends test;
-  `uvm_component_utils(test_axi_unaligned_write)
-  unaligned_write_seq bw;
+class test_axi_unaligned_write_seq extends test;
+  `uvm_component_utils(test_axi_unaligned_write_seq)
+  axi_unaligned_write_seq seq;
 
-  function new(string name = "test_axi_unaligned_write", uvm_component parent);
+  function new(string name = "test_axi_unaligned_write_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
   task run_phase(uvm_phase phase);
     phase.raise_objection(this);
-    bw = unaligned_write_seq::type_id::create("bw");
-    bw.start(env.inp_agnt.wrsqr);
+    seq = axi_unaligned_write_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.wrsqr);
     #40;
     phase.drop_objection(this);
   endtask
 endclass
 
-class test_axi_unaligned_read extends test;
-  `uvm_component_utils(test_axi_unaligned_read)
-  axi_unaligned_read_seq br;
+class test_axi_unaligned_read_seq extends test;
+  `uvm_component_utils(test_axi_unaligned_read_seq)
+  axi_unaligned_read_seq seq;
 
-  function new(string name = "test_axi_unaligned_read", uvm_component parent);
+  function new(string name = "test_axi_unaligned_read_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
   task run_phase(uvm_phase phase);
     phase.raise_objection(this);
-    br = axi_unaligned_read_seq::type_id::create("br");
-    br.start(env.inp_agnt.rdsqr);
+    seq = axi_unaligned_read_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.rdsqr);
     #40;
     phase.drop_objection(this);
   endtask
@@ -270,35 +304,35 @@ endclass
 // ==========================================
 // 4. Decode Error Tests (DECERR)
 // ==========================================
-class test_axi_decerr_write extends test;
-  `uvm_component_utils(test_axi_decerr_write)
-  axi_decerr_write_seq bw;
+class test_axi_decerr_write_seq extends test;
+  `uvm_component_utils(test_axi_decerr_write_seq)
+  axi_decerr_write_seq seq;
 
-  function new(string name = "test_axi_decerr_write", uvm_component parent);
+  function new(string name = "test_axi_decerr_write_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
   task run_phase(uvm_phase phase);
     phase.raise_objection(this);
-    bw = axi_decerr_write_seq::type_id::create("bw");
-    bw.start(env.inp_agnt.wrsqr);
+    seq = axi_decerr_write_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.wrsqr);
     #40;
     phase.drop_objection(this);
   endtask
 endclass
 
-class test_axi_decerr_read extends test;
-  `uvm_component_utils(test_axi_decerr_read)
-  axi_decerr_read_seq br;
+class test_axi_decerr_read_seq extends test;
+  `uvm_component_utils(test_axi_decerr_read_seq)
+  axi_decerr_read_seq seq;
 
-  function new(string name = "test_axi_decerr_read", uvm_component parent);
+  function new(string name = "test_axi_decerr_read_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
   task run_phase(uvm_phase phase);
     phase.raise_objection(this);
-    br = axi_decerr_read_seq::type_id::create("br");
-    br.start(env.inp_agnt.rdsqr);
+    seq = axi_decerr_read_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.rdsqr);
     #40;
     phase.drop_objection(this);
   endtask
@@ -306,53 +340,36 @@ endclass
 
 
 // ==========================================
-// 5. Strobe & Concurrency Tests
+// 5. Strobe Sweep & Pattern Tests
 // ==========================================
-class test_axi_wstrb extends test;
-  `uvm_component_utils(test_axi_wstrb)
-  axi_wstrb_test_seq bw;
+class test_axi_wstrb_sweep_seq extends test;
+  `uvm_component_utils(test_axi_wstrb_sweep_seq)
+  axi_wstrb_sweep_seq seq;
 
-  function new(string name = "test_axi_wstrb", uvm_component parent);
+  function new(string name = "test_axi_wstrb_sweep_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
   task run_phase(uvm_phase phase);
     phase.raise_objection(this);
-    bw = axi_wstrb_test_seq::type_id::create("bw");
-    bw.start(env.inp_agnt.wrsqr);
+    seq = axi_wstrb_sweep_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.wrsqr);
     #40;
     phase.drop_objection(this);
   endtask
 endclass
 
-class test_axi_all_wstrb extends test;
-  `uvm_component_utils(test_axi_all_wstrb)
-  axi_all_wstrb_seq bw;
+class test_axi_wstrb_pattern_seq extends test;
+  `uvm_component_utils(test_axi_wstrb_pattern_seq)
+  axi_wstrb_pattern_seq seq;
 
-  function new(string name = "test_axi_all_wstrb", uvm_component parent);
+  function new(string name = "test_axi_wstrb_pattern_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
   task run_phase(uvm_phase phase);
     phase.raise_objection(this);
-    bw = axi_all_wstrb_seq::type_id::create("bw");
-    bw.start(env.inp_agnt.wrsqr);
-    #40;
-    phase.drop_objection(this);
-  endtask
-endclass
-
-class test_axi_concurrent_rw extends test;
-  `uvm_component_utils(test_axi_concurrent_rw)
-  axi_concurrent_rw_seq seq;
-
-  function new(string name = "test_axi_concurrent_rw", uvm_component parent);
-    super.new(name, parent);
-  endfunction
-
-  task run_phase(uvm_phase phase);
-    phase.raise_objection(this);
-    seq = axi_concurrent_rw_seq::type_id::create("seq");
+    seq = axi_wstrb_pattern_seq::type_id::create("seq");
     seq.start(env.inp_agnt.wrsqr);
     #40;
     phase.drop_objection(this);
@@ -363,45 +380,45 @@ endclass
 // ==========================================
 // 6. Decoupled FSM Handshake & Sweep Tests
 // ==========================================
-class test_axi_addr_before_data extends test;
-  `uvm_component_utils(test_axi_addr_before_data)
-  axi_addr_before_data_seq bw;
+class test_axi_addr_before_data_seq extends test;
+  `uvm_component_utils(test_axi_addr_before_data_seq)
+  axi_addr_before_data_seq seq;
 
-  function new(string name = "test_axi_addr_before_data", uvm_component parent);
+  function new(string name = "test_axi_addr_before_data_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
   task run_phase(uvm_phase phase);
     phase.raise_objection(this);
-    bw = axi_addr_before_data_seq::type_id::create("bw");
-    bw.start(env.inp_agnt.wrsqr);
+    seq = axi_addr_before_data_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.wrsqr);
     #40;
     phase.drop_objection(this);
   endtask
 endclass
 
-class test_axi_data_before_addr extends test;
-  `uvm_component_utils(test_axi_data_before_addr)
-  axi_data_before_addr_seq bw;
+class test_axi_data_before_addr_seq extends test;
+  `uvm_component_utils(test_axi_data_before_addr_seq)
+  axi_data_before_addr_seq seq;
 
-  function new(string name = "test_axi_data_before_addr", uvm_component parent);
+  function new(string name = "test_axi_data_before_addr_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
   task run_phase(uvm_phase phase);
     phase.raise_objection(this);
-    bw = axi_data_before_addr_seq::type_id::create("bw");
-    bw.start(env.inp_agnt.wrsqr);
+    seq = axi_data_before_addr_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.wrsqr);
     #40;
     phase.drop_objection(this);
   endtask
 endclass
 
-class test_axi_full_memory_sweep extends test;
-  `uvm_component_utils(test_axi_full_memory_sweep)
+class test_axi_full_memory_sweep_seq extends test;
+  `uvm_component_utils(test_axi_full_memory_sweep_seq)
   axi_full_memory_sweep_seq seq;
 
-  function new(string name = "test_axi_full_memory_sweep", uvm_component parent);
+  function new(string name = "test_axi_full_memory_sweep_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
@@ -414,17 +431,34 @@ class test_axi_full_memory_sweep extends test;
   endtask
 endclass
 
-class test_axi_ready_delay extends test;
-  `uvm_component_utils(test_axi_ready_delay)
-  axi_ready_delay_seq seq;
+class test_axi_fixed_addr_write_seq extends test;
+  `uvm_component_utils(test_axi_fixed_addr_write_seq)
+  axi_fixed_addr_write_seq seq;
 
-  function new(string name = "test_axi_ready_delay", uvm_component parent);
+  function new(string name = "test_axi_fixed_addr_write_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
   task run_phase(uvm_phase phase);
     phase.raise_objection(this);
-    seq = axi_ready_delay_seq::type_id::create("seq");
+    seq = axi_fixed_addr_write_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.wrsqr);
+    #40;
+    phase.drop_objection(this);
+  endtask
+endclass
+
+class test_axi_write_addr_sweep_seq extends test;
+  `uvm_component_utils(test_axi_write_addr_sweep_seq)
+  axi_write_addr_sweep_seq seq;
+
+  function new(string name = "test_axi_write_addr_sweep_seq", uvm_component parent);
+    super.new(name, parent);
+  endfunction
+
+  task run_phase(uvm_phase phase);
+    phase.raise_objection(this);
+    seq = axi_write_addr_sweep_seq::type_id::create("seq");
     seq.start(env.inp_agnt.wrsqr);
     #40;
     phase.drop_objection(this);
@@ -433,76 +467,37 @@ endclass
 
 
 // ==========================================
-// 7. Master Virtual Regression Test (Hits 100% Cumulative Coverage)
+// 7. Toggle & Master 100% Coverage Tests
 // ==========================================
-class test_axi_master_100pct_coverage extends test;
-  `uvm_component_utils(test_axi_master_100pct_coverage)
+class test_axi_toggle_coverage_seq extends test;
+  `uvm_component_utils(test_axi_toggle_coverage_seq)
+  axi_toggle_coverage_seq seq;
 
-  write_valid_test         seq_w_valid;
-  read_valid_test          seq_r_valid;
-  axi_write_ro_sequence    seq_w_ro;
-  axi_read_wo_sequence     seq_r_wo;
-  unaligned_write_seq      seq_unalign_w;
-  axi_unaligned_read_seq   seq_unalign_r;
-  axi_decerr_write_seq     seq_decerr_w;
-  axi_decerr_read_seq      seq_decerr_r;
-  axi_all_wstrb_seq        seq_all_wstrb;
-  axi_addr_before_data_seq seq_addr_first;
-  axi_data_before_addr_seq seq_data_first;
-  axi_full_memory_sweep_seq seq_mem_sweep;
-
-  function new(string name = "test_axi_master_100pct_coverage", uvm_component parent);
+  function new(string name = "test_axi_toggle_coverage_seq", uvm_component parent);
     super.new(name, parent);
   endfunction
 
   task run_phase(uvm_phase phase);
     phase.raise_objection(this);
+    seq = axi_toggle_coverage_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.wrsqr);
+    #100;
+    phase.drop_objection(this);
+  endtask
+endclass
 
-    // 1. Parallel Sweep of valid regions
-    seq_w_valid = write_valid_test::type_id::create("seq_w_valid");
-    seq_r_valid = read_valid_test::type_id::create("seq_r_valid");
-    fork
-      seq_w_valid.start(env.inp_agnt.wrsqr);
-      seq_r_valid.start(env.inp_agnt.rdsqr);
-    join
+class test_axi_master_100pct_coverage_seq extends test;
+  `uvm_component_utils(test_axi_master_100pct_coverage_seq)
+  axi_master_100pct_coverage_seq seq;
 
-    // 2. Full memory sweep covering boundary addresses and reserved locations
-    seq_mem_sweep = axi_full_memory_sweep_seq::type_id::create("seq_mem_sweep");
-    seq_mem_sweep.start(env.inp_agnt.wrsqr);
+  function new(string name = "test_axi_master_100pct_coverage_seq", uvm_component parent);
+    super.new(name, parent);
+  endfunction
 
-    // 3. Permission errors (SLVERR)
-    seq_w_ro = axi_write_ro_sequence::type_id::create("seq_w_ro");
-    seq_r_wo = axi_read_wo_sequence::type_id::create("seq_r_wo");
-    fork
-      seq_w_ro.start(env.inp_agnt.wrsqr);
-      seq_r_wo.start(env.inp_agnt.rdsqr);
-    join
-
-    // 4. Unaligned error accesses (SLVERR)
-    seq_unalign_w = unaligned_write_seq::type_id::create("seq_unalign_w");
-    seq_unalign_r = axi_unaligned_read_seq::type_id::create("seq_unalign_r");
-    fork
-      seq_unalign_w.start(env.inp_agnt.wrsqr);
-      seq_unalign_r.start(env.inp_agnt.rdsqr);
-    join
-
-    // 5. Out-of-range address accesses (DECERR)
-    seq_decerr_w = axi_decerr_write_seq::type_id::create("seq_decerr_w");
-    seq_decerr_r = axi_decerr_read_seq::type_id::create("seq_decerr_r");
-    fork
-      seq_decerr_w.start(env.inp_agnt.wrsqr);
-      seq_decerr_r.start(env.inp_agnt.rdsqr);
-    join
-
-    // 6. Strobes & Decoupled Handshakes
-    seq_all_wstrb   = axi_all_wstrb_seq::type_id::create("seq_all_wstrb");
-    seq_addr_first  = axi_addr_before_data_seq::type_id::create("seq_addr_first");
-    seq_data_first  = axi_data_before_addr_seq::type_id::create("seq_data_first");
-
-    seq_all_wstrb.start(env.inp_agnt.wrsqr);
-    seq_addr_first.start(env.inp_agnt.wrsqr);
-    seq_data_first.start(env.inp_agnt.wrsqr);
-
+  task run_phase(uvm_phase phase);
+    phase.raise_objection(this);
+    seq = axi_master_100pct_coverage_seq::type_id::create("seq");
+    seq.start(env.inp_agnt.wrsqr);
     #100;
     phase.drop_objection(this);
   endtask

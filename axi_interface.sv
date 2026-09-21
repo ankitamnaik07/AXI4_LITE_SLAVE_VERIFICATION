@@ -33,7 +33,7 @@ endclocking
 
 clocking monin_cb@(posedge ACLK);
 default input #1 output #0;
-input AWADDR, AWVALID, AWREADY, AWPROT, WDATA, WSTRB, WVALID, WREADY, BREADY, ARADDR, ARVALID, ARREADY, RREADY; 
+input AWADDR, AWVALID, AWREADY, AWPROT, WDATA, WSTRB, WVALID, WREADY, BREADY, ARADDR, ARVALID,ARPROT, ARREADY, RREADY; 
 endclocking
 
 clocking monout_cb@(posedge ACLK);
