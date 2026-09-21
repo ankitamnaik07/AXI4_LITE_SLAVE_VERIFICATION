@@ -28,7 +28,7 @@ class axi_base_write_seq extends uvm_sequence#(axi_seq_item);
       req = axi_seq_item::type_id::create("req");
       start_item(req);
       assert(req.randomize() with {
-        AWADDR  == 16;
+	AWADDR  == 16;
         AWVALID == 1;
         WDATA   == 100;
         WSTRB   == 4'b1111;
@@ -58,7 +58,7 @@ class axi_base_read_seq extends uvm_sequence#(axi_seq_item);
         AWVALID == 0;
         WVALID  == 0;
         ARVALID == 1;
-        ARADDR  == 16;
+	ARADDR  == 16;
         RREADY  == 1;
       });
       finish_item(req);
@@ -698,3 +698,4 @@ class axi_master_100pct_coverage_seq extends axi_sequence;
     end
   endtask
 endclass
+

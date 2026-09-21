@@ -7,7 +7,7 @@ import uvm_pkg::*;
 `include "axi_seq_item.sv"
 `include "axi_config.sv"
 `include "axi_sequencer.sv"
-`include "axi_driver.sv"
+`include "axi_driver2.sv"
 `include "axi_input_monitor.sv"
 `include "axi_output_monitor.sv"
 `include "axi_input_agent.sv"
