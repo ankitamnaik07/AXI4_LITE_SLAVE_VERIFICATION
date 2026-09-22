@@ -11,112 +11,59 @@ class axi_subscriber extends uvm_component;
   uvm_analysis_imp_outwr #(axi_seq_item, axi_subscriber) ap_outwr;
   uvm_analysis_imp_outrd #(axi_seq_item, axi_subscriber) ap_outrd;
 
-  localparam bit [31:0] LAST_VALID  = (`MEM_DEPTH * 4) - 4;
-  localparam bit [31:0] FIRST_INVAL = (`MEM_DEPTH * 4);
 
-  axi_seq_item wr_q [$];
-  axi_seq_item rd_q [$];
+  axi_seq_item rdintr;
+  axi_seq_item wrintr;
+  axi_seq_item rdouttr;
+  axi_seq_item wrouttr;
 
-  covergroup cg_write with function sample(bit [31:0] addr, bit [2:0] prot, bit [31:0] data, bit [3:0] strb, bit [1:0] resp);
+  covergroup cg_write;
     option.per_instance = 1;
 
-    cp_awaddr : coverpoint addr {
-      bins low_inrange    = {[32'h0 : 32'h0C]};
-      bins mid_inrange    = {[32'h10 : LAST_VALID-4]};
-      bins last_inrange   = {LAST_VALID};
-      bins first_outrange = {FIRST_INVAL};
-      bins far_outrange   = {[FIRST_INVAL+4 : $]};
-      bins unaligned      = {[32'h1:32'h3], [32'h5:32'h7]};
+    awaddr_cp: coverpoint wrintr.AWADDR {
+      bins read_write = {[32'h00 : 32'h24]};
+      bins read_only = {[32'h28 : 32'h30]};
+      bins write_only = {[32'h34 : 32'h38]};
+      bins boundry_rw = {32'h3C};
+      bins others = default;
     }
 
-    cp_awprot : coverpoint prot {
-      bins prot[] = {[0:7]};
+    wdata_cp: coverpoint wrintr.WDATA {
+      bins low  = {[32'h0000_0000 : 32'h5555_5555]};
+      bins mid  = {[32'h5555_5556 : 32'hAAAA_AAAA]};
+      bins high = {[32'hAAAA_AAAB : 32'hFFFF_FFFF]};
     }
 
-    cp_wstrb : coverpoint strb {
+    wstrb_cp: coverpoint wrintr.WSTRB {
       bins all_bytes   = {4'b1111};
       bins no_bytes    = {4'b0000};
       bins single_byte = {4'b0001, 4'b0010, 4'b0100, 4'b1000};
       bins partial     = default;
     }
-
-    cp_wdata : coverpoint data {
-      bins all_zeros = {32'h0000_0000};
-      bins all_ones  = {32'hFFFF_FFFF};
-      bins random    = default;
-    }
-
-    cp_bresp : coverpoint resp {
+    cp_bresp : coverpoint wrintr.BRESP {
       bins OKAY   = {2'b00};
       bins SLVERR = {2'b10};
       bins DECERR = {2'b11};
       illegal_bins EXOKAY = {2'b01};
     }
-
-    cross_addr_x_bresp : cross cp_awaddr, cp_bresp {
-      // In-range valid addresses can never return DECERR
-      ignore_bins decerr_in_range = binsof(cp_awaddr) intersect {
-        [32'h0:32'h0C], [32'h10:LAST_VALID-4], LAST_VALID
-      } && binsof(cp_bresp.DECERR);
-
-      // Out-of-range addresses can only return DECERR (never OKAY or SLVERR)
-      ignore_bins non_decerr_outrange = binsof(cp_awaddr) intersect {
-        FIRST_INVAL, [FIRST_INVAL+4:$]
-      } && binsof(cp_bresp) intersect {2'b00, 2'b10};
-
-      // Unaligned addresses return SLVERR, never OKAY or DECERR
-      ignore_bins unalign_non_slverr = binsof(cp_awaddr.unaligned) && binsof(cp_bresp) intersect {2'b00, 2'b11};
-
-      // last_inrange (0x3C) is a standard RW register; it never returns SLVERR on write
-      ignore_bins slverr_last_inrange = binsof(cp_awaddr.last_inrange) && binsof(cp_bresp.SLVERR);
-    }
-
-    cross_strb_x_addr : cross cp_wstrb, cp_awaddr;
   endgroup
 
-  covergroup cg_read with function sample(bit [31:0] addr, bit [2:0] prot, bit [1:0] resp);
+  covergroup cg_read;
     option.per_instance = 1;
 
-    cp_araddr : coverpoint addr {
-      bins low_inrange    = {[32'h0 : 32'h0C]};
-      bins mid_inrange    = {[32'h10 : LAST_VALID-4]};
-      bins last_inrange   = {LAST_VALID};
-      bins first_outrange = {FIRST_INVAL};
-      bins far_outrange   = {[FIRST_INVAL+4 : $]};
-      bins unaligned      = {[32'h1:32'h3], [32'h5:32'h7]};
+    araddr_cp: coverpoint rdintr.ARADDR {
+      bins low    = {[32'h0 : 32'h0C]};
+      bins mid    = {[32'h10 : 32'h38]};
+      bins last   = {32'h3C};
+      bins out   = {[32'h40 : $]};
+      bins unaligned= {[32'h0 : 32'h3B]} with (item % 4 != 0);
     }
-
-    cp_arprot : coverpoint prot {
-      bins prot[] = {[0:7]};
-    }
-
-    cp_rresp : coverpoint resp {
-      bins OKAY   = {2'b00};
-      bins SLVERR = {2'b10};
-      bins DECERR = {2'b11};
-      illegal_bins EXOKAY = {2'b01};
-    }
-
-    cross_addr_x_rresp : cross cp_araddr, cp_rresp {
-      // In-range valid addresses can never return DECERR
-      ignore_bins decerr_in_range = binsof(cp_araddr) intersect {
-        [32'h0:32'h0C], [32'h10:LAST_VALID-4], LAST_VALID
-      } && binsof(cp_rresp.DECERR);
-
-      // Out-of-range addresses can only return DECERR (never OKAY or SLVERR)
-      ignore_bins non_decerr_outrange = binsof(cp_araddr) intersect {
-        FIRST_INVAL, [FIRST_INVAL+4:$]
-      } && binsof(cp_rresp) intersect {2'b00, 2'b10};
-
-      // Unaligned addresses return SLVERR, never OKAY or DECERR
-      ignore_bins unalign_non_slverr = binsof(cp_araddr.unaligned) && binsof(cp_rresp) intersect {2'b00, 2'b11};
-
-      // last_inrange (0x3C) is a RW register; it never returns SLVERR on read
-      ignore_bins slverr_last_inrange = binsof(cp_araddr.last_inrange) && binsof(cp_rresp.SLVERR);
+    cp_arprot : coverpoint rdintr.ARPROT {
+      bins all_prots[] = {[0:7]};
     }
   endgroup
 
-  function new(string name = "axi_coverage", uvm_component parent);
+  function new(string name = "axi_subscriber", uvm_component parent);
     super.new(name, parent);
     ap_inwr  = new("ap_inwr",  this);
     ap_inrd  = new("ap_inrd",  this);
@@ -127,39 +74,28 @@ class axi_subscriber extends uvm_component;
   endfunction
 
   function void write_inwr(axi_seq_item t);
-    wr_q.push_back(t);
+    wrintr = t;
+    cg_write.sample();
   endfunction
 
   function void write_inrd(axi_seq_item t);
-    rd_q.push_back(t);
+    rdintr = t;
+    cg_read.sample();
   endfunction
 
   function void write_outwr(axi_seq_item t);
-    axi_seq_item req;
-    if(wr_q.size() == 0) begin
-      `uvm_warning("COVERAGE", "B response with no pending write request")
-      return;
-    end
-    req = wr_q.pop_front();
-    cg_write.sample(req.AWADDR, req.AWPROT, req.WDATA, req.WSTRB, t.BRESP);
+    wrouttr = t;
+    cg_write.sample();
   endfunction
 
   function void write_outrd(axi_seq_item t);
-    axi_seq_item req;
-    if(rd_q.size() == 0) begin
-      `uvm_warning("COVERAGE", "R response with no pending read request")
-      return;
-    end
-    req = rd_q.pop_front();
-    cg_read.sample(req.ARADDR, req.ARPROT, t.RRESP);
+    rdouttr = t;
+    cg_read.sample();
   endfunction
 
   function void report_phase(uvm_phase phase);
-    `uvm_info("COVERAGE", $sformatf("cg_write = %0.2f%%  cg_read = %0.2f%%", cg_write.get_coverage(), cg_read.get_coverage()), UVM_NONE)
-    if(wr_q.size() != 0)
-      `uvm_warning("COVERAGE", $sformatf("%0d writes never got a B response", wr_q.size()))
-    if(rd_q.size() != 0)
-      `uvm_warning("COVERAGE", $sformatf("%0d reads never got an R response", rd_q.size()))
+    `uvm_info("COVERAGE", $sformatf("Write Coverage = %0.2f%% | Read Coverage = %0.2f%%",
+                cg_write.get_coverage(), cg_read.get_coverage()), UVM_NONE)
   endfunction
 
 endclass

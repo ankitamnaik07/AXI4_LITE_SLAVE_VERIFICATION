@@ -75,10 +75,10 @@ virtual function string convert2string();
     
     // Concatenate all signals grouped by their AXI channels
     s = $sformatf("\n  [AW Channel] AWADDR: 'h%0h | AWPROT: 'h%0h | AWVALID: %0b | AWREADY: %0b", AWADDR, AWPROT, AWVALID, AWREADY);
-    s = {s, $sformatf("\n  [ W Channel] WDATA: 'h%0h | WSTRB: 'h%0h | WVALID: %0b | WREADY: %0b", WDATA, WSTRB, WVALID, WREADY)};
-    s = {s, $sformatf("\n  [ B Channel] BRESP: 'h%0h | BVALID: %0b | BREADY: %0b", BRESP, BVALID, BREADY)};
+    s = {s, $sformatf("\n  [ W Channel] WDATA: 'h%0h | WSTRB: %0b | WVALID: %0b | WREADY: %0b", WDATA, WSTRB, WVALID, WREADY)};
+    s = {s, $sformatf("\n  [ B Channel] BRESP: 'b%0b | BVALID: %0b | BREADY: %0b", BRESP, BVALID, BREADY)};
     s = {s, $sformatf("\n  [AR Channel] ARADDR: 'h%0h | ARPROT: 'h%0h | ARVALID: %0b | ARREADY: %0b", ARADDR, ARPROT, ARVALID, ARREADY)};
-    s = {s, $sformatf("\n  [ R Channel] RDATA: 'h%0h | RRESP: 'h%0h | RVALID: %0b | RREADY: %0b", RDATA, RRESP, RVALID, RREADY)};
+    s = {s, $sformatf("\n  [ R Channel] RDATA: 'h%0h | RRESP: %0b | RVALID: %0b | RREADY: %0b", RDATA, RRESP, RVALID, RREADY)};
     //s = {s, $sformatf("\n  [   Delays ] aw:%0d w:%0d b:%0d ar:%0d r:%0d | wrsel: %0d", aw_delay, w_delay, b_delay, ar_delay, r_delay, wrsel)};
     
     return s;
