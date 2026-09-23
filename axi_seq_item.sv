@@ -68,7 +68,7 @@ endfunction
 }*/
 
 constraint c1{
-	wt_addr == 1; wt_data == 0;
+	wt_addr == 0; wt_data == 1;
 }
 virtual function string convert2string();
     string s;

@@ -679,11 +679,12 @@ class ro_readback_test extends test;
   endtask
 endclass
 
-
 class wstrb_readback_test extends test;
   `uvm_component_utils(wstrb_readback_test)
 
-  wstrb_readback_seq seq;
+  wstrb_wr_single_seq wr_seq;
+  wstrb_rd_single_seq rd_seq;
+  //bit [3:0] test_strobes[] = '{4'b0001, 4'b0010, 4'b0100, 4'b1000, 4'b0011, 4'b1100};
 
   function new(string name = "wstrb_readback_test", uvm_component parent);
     super.new(name, parent);
@@ -692,8 +693,15 @@ class wstrb_readback_test extends test;
   task run_phase(uvm_phase phase);
     phase.raise_objection(this);
 
-    seq = wstrb_readback_seq::type_id::create("seq");
-    seq.start(env.inp_agnt.wrsqr);
+    //foreach (test_strobes[i]) begin
+      // Send write operations to the write sequencer
+      wr_seq = wstrb_wr_single_seq::type_id::create("wr_seq");
+    //  wr_seq.strb = test_strobes[i];
+      wr_seq.start(env.inp_agnt.wrsqr);
+
+      // Send read operation to the read sequencer
+      rd_seq = wstrb_rd_single_seq::type_id::create("rd_seq");
+      rd_seq.start(env.inp_agnt.rdsqr);
 
     #40;
     phase.drop_objection(this);

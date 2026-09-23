@@ -753,63 +753,76 @@ class ro_readback_seq extends basic_seq;
 endclass
 
 
-class wstrb_readback_seq extends basic_seq;
-  `uvm_object_utils(wstrb_readback_seq)
-
-  function new(string name = "wstrb_readback_seq");
+class wstrb_wr_single_seq extends basic_seq;
+  `uvm_object_utils(wstrb_wr_single_seq)
+	int i;
+  
+	bit [3:0]strb = '{4'b0010, 4'b1110, 4'b1010, 4'b1100};
+  function new(string name = "wstrb_wr_single_seq");
     super.new(name);
   endfunction
 
-  bit [3:0] test_strobes[] = '{4'b0001, 4'b0010, 4'b0100, 4'b1000, 4'b0011, 4'b1100};
-
   task body();
-    foreach (test_strobes[i]) begin
-      req = axi_seq_item::type_id::create("req");
-      start_item(req);
-      assert(req.randomize() with {
-        AWVALID == 1;
-        AWADDR  == 32'h10;
-        AWPROT  == 0;
-        WVALID  == 1;
-        WDATA   == 32'h0000_0000;
-        WSTRB   == 4'b1111;
-        BREADY  == 1;
-        ARVALID == 0;
-        RREADY  == 0;
-      });
-      finish_item(req);
+    // 1. Initialize to 0
+    req = axi_seq_item::type_id::create("req");
+    start_item(req);
+    assert(req.randomize() with {
+      AWVALID == 1;
+      AWADDR  == 32'h10;
+      AWPROT  == 0;
+      WVALID  == 1;
+      WDATA   == 32'h0000_0000;
+      WSTRB   == 4'b1111;
+      BREADY  == 1;
+      ARVALID == 0;
+      RREADY  == 0;
+    });
+    finish_item(req);
 
-      req = axi_seq_item::type_id::create("req");
-      start_item(req);
-      assert(req.randomize() with {
-        AWVALID == 1;
-        AWADDR  == 32'h10;
-        AWPROT  == 0;
-        WVALID  == 1;
-        WDATA   == 32'hAABB_CCDD;
-        WSTRB   == test_strobes[i];
-        BREADY  == 1;
-        ARVALID == 0;
-        RREADY  == 0;
-      });
-      finish_item(req);
-
-      req = axi_seq_item::type_id::create("req");
-      start_item(req);
-      assert(req.randomize() with {
-        AWVALID == 0;
-        WVALID  == 0;
-        BREADY  == 0;
-        ARVALID == 1;
-        ARADDR  == 32'h10;
-        ARPROT  == 0;
-        RREADY  == 1;
-      });
-      finish_item(req);
-    end
+    // 2. Partial write
+	  foreach (strb[i])
+    req = axi_seq_item::type_id::create("req");
+    start_item(req);
+    assert(req.randomize() with {
+      AWVALID == 1;
+      AWADDR  == 32'h10;
+      AWPROT  == 0;
+      WVALID  == 1;
+      WDATA   == 32'hAABB_CCDD;
+      WSTRB   == strb[i];
+      BREADY  == 1;
+      ARVALID == 0;
+      RREADY  == 0;
+    });
+    finish_item(req);
+	  
   endtask
 endclass
 
+
+class wstrb_rd_single_seq extends basic_seq;
+  `uvm_object_utils(wstrb_rd_single_seq)
+
+  function new(string name = "wstrb_rd_single_seq");
+    super.new(name);
+  endfunction
+
+  task body();
+    // 3. Read back register 0x10
+    req = axi_seq_item::type_id::create("req");
+    start_item(req);
+    assert(req.randomize() with {
+      AWVALID == 0;
+      WVALID  == 0;
+      BREADY  == 0;
+      ARVALID == 1;
+      ARADDR  == 32'h10;
+      ARPROT  == 0;
+      RREADY  == 1;
+    });
+    finish_item(req);
+  endtask
+endclass
 
 class unaligned_nocorrupt_seq extends basic_seq;
   `uvm_object_utils(unaligned_nocorrupt_seq)
